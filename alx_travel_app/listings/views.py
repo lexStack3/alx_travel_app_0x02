@@ -16,7 +16,7 @@ from .serializers import (
     BookingSerializer,
     ReviewSerializer
 )
-from .emails import send_payment_confirmation_email
+from .tasks import send_payment_confirmation_email
 
 
 class ListingViewSet(viewsets.ModelViewSet):
