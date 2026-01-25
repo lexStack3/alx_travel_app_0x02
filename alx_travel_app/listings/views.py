@@ -16,7 +16,10 @@ from .serializers import (
     BookingSerializer,
     ReviewSerializer
 )
-from .tasks import send_payment_confirmation_email
+from .tasks import (
+    send_payment_confirmation_email,
+    send_booking_confirmation_email
+)
 
 
 class ListingViewSet(viewsets.ModelViewSet):
@@ -33,12 +36,19 @@ class BookingViewSet(viewsets.ModelViewSet):
     serializer_class = BookingSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def perform_create(self, serializer):
+        booking = serializer.save()
+
+        send_booking_confirmation_email.delay(
+            booking.passenger_email,
+            str(booking.booking_id)
+        )
+
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-
 
 CHAPA_INIT_URL = "https://api.chapa.co/v1/transaction/initialize"
 CHAPA_VERIFY_URL = "https://api.chapa.co/v1/transaction/verify/"

@@ -21,3 +21,23 @@ def send_payment_confirmation_email(self, email, booking_id, amount):
         [email],
         fail_silently=False
     )
+
+    return "Email Sent ✅"
+
+@shared_task
+def send_booking_confirmation_email(passenger_email, booking_id):
+    subject = "Booking Created Successfully"
+    message = (
+        f"Your booking with ID {booking_id} has been created successfully."
+        f"You will receive another email once payment is confirmed."
+    )
+
+    send_email(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [passenger_email],
+        fail_silently=False
+    )
+
+    return "Email Sent ✅"
